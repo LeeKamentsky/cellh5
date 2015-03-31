@@ -260,9 +260,10 @@ class CH5RegionWriter(CH5ObjectWriter):
             
             
         object_labels = object_labels.astype(numpy.int32)
-        times = numpy.repeat(t, len(object_labels))
+        times = numpy.repeat(t, len(object_labels)).astype(numpy.int32)
         
-        self.dset[self.offset:self.offset+len(object_labels)] = numpy.c_[times, object_labels].view(dtype=self.dtype).T
+        self.dset[self.offset:self.offset+len(object_labels)] = \
+            numpy.c_[times, object_labels].view(dtype=self.dtype).T
         
         self.offset+=len(object_labels)
         
@@ -401,8 +402,8 @@ class CH5ImageWideObjectWriter(CH5ObjectWriter):
         if 1 + self.offset > len(self.dset) :
             # resize
             self.dset.resize((1 + self.offset,))
-                    
-        self.dset[self.offset:self.offset+1] = numpy.array([self.offset, t,c,z]).view(dtype=self.dtype).T
+        src = numpy.array([[self.offset, t,c,z]], numpy.int32).view(dtype=self.dtype)
+        self.dset[self.offset:self.offset+1] = src
         
         self.offset+=1
     
